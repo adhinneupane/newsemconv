@@ -1,0 +1,47 @@
+package {{ package_name }};
+
+/**
+ * Auto-generated JVM Metrics SDK - Version {{ sdk_version }}
+ */
+public class JvmMetrics {
+    private static boolean initialized = false;
+    
+    public static void initialize() {
+        if (!initialized) {
+            System.out.println("Initializing JVM Metrics SDK v{{ sdk_version }}");
+            initialized = true;
+        }
+    }
+    
+    public static void showJvmAttributes() {
+        System.out.println("\nJVM Attributes Report:");
+        System.out.println("======================");
+        {% for attr in model.attributes %}
+        System.out.println("{{ attr.id }}");
+        System.out.println("  Type: {{ attr.type }}");
+        System.out.println("  Description: {{ attr.brief }}");
+        System.out.println("  Required: {{ attr.required|default('false') }}");
+        {% if attr.examples %}System.out.println("  Examples: {{ attr.examples|join(', ') }}");{% endif %}
+        System.out.println();
+        {% endfor %}
+    }
+
+    public static final class Attributes {
+        {% for attr in model.attributes %}
+        /**
+         * {{ attr.brief }}
+         * Type: {{ attr.type }}
+         * Required: {{ attr.required|default('false') }}
+         */
+        public static final String {{ attr.id|upper }} = "{{ attr.id }}";
+        {% endfor %}
+    }
+    
+    public static final class Metrics {
+        {% for attr in model.attributes if attr.type == 'double' %}
+        public static void record{{ attr.id|capitalize }}(double value) {
+            System.out.printf("Recording %s: %.2f%n", Attributes.{{ attr.id|upper }}, value);
+        }
+        {% endfor %}
+    }
+}
