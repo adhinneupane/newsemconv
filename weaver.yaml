@@ -1,0 +1,24 @@
+file_format: 1
+sources:
+  - type: semantic-conventions
+    uri: model/jvm
+templates:
+  - template: templates/java_sdk.j2
+    output_path: generated-sdk/src/main/java/otel/jvm
+    params:
+      package_name: otel.jvm
+      sdk_version: 1.0.0
+    jq_filter: |
+      .attributes |= map(select(.group == "jvm"))
+      | { model: . }
+      
+  - template: templates/readme.j2
+    output_path: generated-sdk/
+    params:
+      sdk_name: OpenTelemetry JVM SDK
+      sdk_version: 1.0.0
+      group_id: otel.jvm
+      artifact_id: jvm-metrics
+    jq_filter: |
+      .attributes |= map(select(.group == "jvm"))
+      | { model: . }
